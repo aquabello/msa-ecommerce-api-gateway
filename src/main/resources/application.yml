@@ -1,0 +1,46 @@
+server:
+  port: 8000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://192.168.123.123:8761/eureka/
+
+spring:
+  application:
+    name: ecommerce-api-gateway
+  cloud:
+    gateway:
+      default-filters:
+        - name: GlobalFilter
+          args:
+            baseMessage: Ecommerce Api Gateway Global Filter
+            preLogger: true
+            postLogger: true
+      routes:
+        - id: order-service
+#          uri: http://localhost:8081
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/order/**
+          filters:
+#            - AddRequestHeader=order-request, order-request-header
+#            - AddResponseHeader=order-response, order-response-header
+            - name: CustomFilter
+        - id: member-service
+#          uri: http://localhost:8082
+          uri: lb://MEMBER-SERVICE
+          predicates:
+            - Path=/member/**
+          filters:
+#            - AddRequestHeader=member-request, member-request-header
+#            - AddResponseHeader=member-response, member-response-header
+            - name: CustomFilter
+            - name: LoggingFilter
+              args:
+                baseMessage: Logging Filter
+                preLogger: true
+                postLogger: true
+
