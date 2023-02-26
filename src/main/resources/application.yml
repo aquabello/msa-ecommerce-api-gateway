@@ -49,6 +49,14 @@ spring:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*),/$\{segment}
             - AuthorizationHeaderFilter
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/actuator/**     # Actuator
+            - Method=GET,POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*),/$\{segment}
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
           predicates:
@@ -81,6 +89,14 @@ spring:
 #                preLogger: true
 #                postLogger: true
 
-# JWT
-token:
-  secret: 611c94a633cadd552aa47e164541c3c47f419ff5250783bea2b435ef0b75f25e895f966c290004bd97249e26089e75e8aff922b412a14059468dc28e97c1219e
+
+# actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, httptrace
+
+## JWT
+#token:
+#  secret: 611c94a633cadd552aa47e164541c3c47f419ff5250783bea2b435ef0b75f25e895f966c290004bd97249e26089e75e8aff922b412a14059468dc28e97c1219e
